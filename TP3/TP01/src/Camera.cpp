@@ -47,6 +47,7 @@ void Camera::rotateZ(float angle){
 }
 
 const GLMatrix Camera::getViewMatrix(){
+    buildViewMatrix();
     return this->m_ViewMatrix;
 }
 
@@ -63,6 +64,7 @@ void Camera::setFOV(float angle){
 }
 
 const GLMatrix Camera::getProjectionMatrix(){
+    buildProjectionMatrix();
     return this->m_ProjectionMatrix;
 }
 

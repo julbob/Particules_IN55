@@ -1,13 +1,7 @@
 ﻿#include "TP01.h"
 
-
-#include "Shapes/Basis.h"
-#include "Shapes/Cubes.h"
-#include "Shapes/Pyramid.h"
-#include "Shapes/Cylinder.h"
-#include "Shapes/Star.h"
-
 #include <iostream>
+#include "particle.h"
 
 using namespace std;
 
@@ -17,33 +11,33 @@ GLfloat angle2 = 00.0f;
 GLfloat taille = -2.0f;
 const GLfloat g_AngleSpeed = 10.0f;
 
+Particle* particle;
 
-Basis* basis;
-Pyramid* pyr;
-Cylinder* cyl;
-Star* star;
-MultipleColorCube* cube;
 
+GLuint particles_position_buffer;
+GLuint MaxParticles = 1;
+
+static const GLfloat g_vertex_buffer_data[] = {
+     -0.5f, -0.5f, 0.0f,
+      0.5f, -0.5f, 0.0f,
+     -0.5f,  0.5f, 0.0f,
+      0.5f,  0.5f, 0.0f,
+};
+
+static GLfloat* g_particule_position_size_data = new GLfloat[MaxParticles * 4];
+
+GLuint billboard_vertex_buffer;
 
 TP01::TP01()
 {
 	setWindowTitle(trUtf8("IN55-TP01"));
 
-    basis = new Basis( 10.0 );
-    star = new Star( 6, 1.0, 1.4, 1.0 );
-    pyr = new Pyramid( 5, 2.0, 10.0 );
-    cyl = new Cylinder( 32, 0.5, -0.5, 0.5 );
-    cube = new MultipleColorCube();
 }
 
 
 TP01::~TP01()
 {
-    delete basis;
-    delete star;
-    delete pyr;
-    delete cyl;
-    delete cube;
+    delete particle;
 }
 
 
@@ -54,11 +48,11 @@ TP01::initializeObjects()
 	glClearColor( 0.2f, 0.2f, 0.2f, 1.0f );
 	glEnable( GL_DEPTH_TEST );
 
-	// Chargement des shaders
-	createShader( "Shaders/color" );
+     //Chargement des shaders
+    createShader( "Shaders/particle" );
 
-    cout << "Shader color: ";
-    if (useShader( "color" ))
+    cout << "Shader particle: ";
+    if (useShader( "particle" ))
     {
         cout << "Loaded!" << endl;
     }
@@ -67,6 +61,29 @@ TP01::initializeObjects()
         cout << "NOT Loaded!" << endl;
     }
 
+
+    glGenBuffers(1, &billboard_vertex_buffer);
+    glBindBuffer(GL_ARRAY_BUFFER, billboard_vertex_buffer);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer_data), g_vertex_buffer_data, GL_STATIC_DRAW);
+
+
+    glGenBuffers(1, &particles_position_buffer);
+    glBindBuffer(GL_ARRAY_BUFFER, particles_position_buffer);
+    // Initialize with empty (NULL) buffer : it will be updated later, each frame.
+    glBufferData(GL_ARRAY_BUFFER, MaxParticles * 4 * sizeof(GLfloat), NULL, GL_STREAM_DRAW);
+
+
+    /* Create and compile our GLSL program from the shaders
+    GLuint programID = LoadShaders( "Particle.vertexshader", "Particle.fragmentshader" );
+
+    // Vertex shader
+    GLuint CameraRight_worldspace_ID  = glGetUniformLocation(programID, "CameraRight_worldspace");
+    GLuint CameraUp_worldspace_ID  = glGetUniformLocation(programID, "CameraUp_worldspace");
+    GLuint ViewProjMatrixID = glGetUniformLocation(programID, "VP");
+
+    // fragment shader
+    GLuint TextureID  = glGetUniformLocation(programID, "myTextureSampler");*/
+
 	return true;
 }
 
@@ -74,84 +91,50 @@ TP01::initializeObjects()
 void
 TP01::render()
 {
+
 	// Initialisation de la caméra
-    lookAt( 0, 5, 30, 0, 0, 0 );
+    lookAt( 0 + angle2, 5 + angle1, 30, 0, 0, 0 );
 
-    /* BONHOME
-    // corp
-    pushMatrix();
-        scale(3,5,2);
-        cube->draw();
-    popMatrix();
-    // bras gauche
-    pushMatrix();
-        translate(2,2.2,0);
-        rotate(angle1,1,0,0);
-        translate(0,1.5,0);
-        scale(1,4,1);
-        cube->draw();
-    popMatrix();
-    // bras droit
-    pushMatrix();
-        translate(-2,2.2,0);
-        rotate(angle2,1,0,0);
-        translate(0,1.5,0);
-        scale(1,4,1);
-        cube->draw();
-    popMatrix();
-    // jambe droite
-    pushMatrix();
-        translate(2,-4.8,0);
-        scale(1,5,1);
-        cube->draw();
-    popMatrix();
-    // jambe gauche
-    pushMatrix();
-        translate(-2,-4.8,0);
-        scale(1,5,1);
-        cube->draw();
-    popMatrix();
-    // tete
-    pushMatrix();
-        translate(0,3.5,0);
-        scale(2,2,2);
-        cube->draw();
-    popMatrix();*/
+    Vector3f pos = particle->getPos();
+    g_particule_position_size_data[4*0+0] = pos.getX();
+    g_particule_position_size_data[4*0+1] = pos.getY();
+    g_particule_position_size_data[4*0+2] = pos.getZ();
 
 
-    /*grue*/
-    // tour
-    pushMatrix();
-        //translate(0,0,0);
-        scale(1,6,1);
-        cyl->draw();
-    popMatrix();
-    // poutre
-    pushMatrix();
-        translate(0,3,0);
+    glBindBuffer(GL_ARRAY_BUFFER, particles_position_buffer);
+    glBufferData(GL_ARRAY_BUFFER, MaxParticles * 4 * sizeof(GLfloat), NULL, GL_STREAM_DRAW); // Buffer orphaning, a common way to improve streaming perf. See above link for details.
+    glBufferSubData(GL_ARRAY_BUFFER, 0, 0 * sizeof(GLfloat) * 4, g_particule_position_size_data);
 
-        rotate(angle1,0,1,0);
-        pushMatrix();
-            scale(8,1,1);
-            cube->draw();
-        popMatrix();
-        // fil
-        pushMatrix();
-            translate(4,taille/2,0);
-            scale(0.1,taille,0.1);
-            cyl->draw();
-         popMatrix();
-        // conrepoid
-         translate(-3.5,-1,0);
-         cube->draw();
+    // 1rst attribute buffer : vertices
+    glEnableVertexAttribArray(0);
+    glBindBuffer(GL_ARRAY_BUFFER, billboard_vertex_buffer);
+    glVertexAttribPointer(
+        0,                  // attribute. No particular reason for 0, but must match the layout in the shader.
+        3,                  // size
+        GL_FLOAT,           // type
+        GL_FALSE,           // normalized?
+        0,                  // stride
+        (void*)0            // array buffer offset
+    );
 
-    popMatrix();
-    // socle
-    pushMatrix();
-        translate(0,-3.5,0);
-        scale(4,1,1);
-        cube->draw();
-     popMatrix();
+    // 2nd attribute buffer : positions of particles' centers
+    glEnableVertexAttribArray(1);
+    glBindBuffer(GL_ARRAY_BUFFER, particles_position_buffer);
+    glVertexAttribPointer(
+        1,                                // attribute. No particular reason for 1, but must match the layout in the shader.
+        4,                                // size : x + y + z + size => 4
+        GL_FLOAT,                         // type
+        GL_FALSE,                         // normalized?
+        0,                                // stride
+        (void*)0                          // array buffer offset
+    );
+
+
+
+    /*pushMatrix();
+        scale(4,4,4);
+        particle->draw();
+     popMatrix();*/
 
 }
 

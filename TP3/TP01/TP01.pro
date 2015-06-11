@@ -29,7 +29,9 @@ HEADERS += \
     ../Common/Shapes/Star.h \
     src/Vector3f.h \
     src/Quaternion.h \
-    src/Camera.h
+    src/Camera.h \
+    particle.h \
+    src/scene.h
 
 SOURCES += \
     ../Common/GlFramework.cpp \
@@ -47,4 +49,6 @@ SOURCES += \
     src/main.cpp \
     src/Vector3f.cpp \
     src/Quaternion.cpp \
-    src/Camera.cpp
+    src/Camera.cpp \
+    particle.cpp \
+    src/scene.cpp

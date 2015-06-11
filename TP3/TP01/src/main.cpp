@@ -10,7 +10,7 @@
 //*****************************************************************************
 
 
-#include "TP01.h"
+#include "scene.h"
 
 #include <QApplication>
 
@@ -18,7 +18,7 @@
 int main(int argc, char *argv[])
 {
 	QApplication app(argc, argv);
-	TP01 win;
+    Scene win;
 	win.show();
 	return app.exec();
 }

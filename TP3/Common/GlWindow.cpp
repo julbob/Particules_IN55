@@ -44,7 +44,6 @@ GlWindow::paintGL()
 {
     // Nettoyage du Color Buffer et du Depth Buffer
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
     render();
 }
 

@@ -15,4 +15,6 @@ INPUT(
 ./obj\Vector3f.o
 ./obj\Quaternion.o
 ./obj\Camera.o
+./obj\particle.o
+./obj\scene.o
 );
