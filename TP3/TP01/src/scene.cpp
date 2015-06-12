@@ -23,7 +23,6 @@ indices((GLuint*) calloc(maxParticles, sizeof( GLuint)))
     float vz =(float)rand()/(float)RAND_MAX * 8 - 8;
 
     for(int i = 0; i<maxParticles; i++){
-
         Particle *p = new Particle( new Vector3f(x,y,z), new Vector3f(vx,vy,vz) ,1,5);
         particles.append(p);
         x = (float)rand()/(float)RAND_MAX * 4 - 4;
@@ -89,7 +88,8 @@ Scene::render()
         eyeY = 5.0*sin(-moveX/300.0)*cos(moveY/300.0);
         eyeZ = 5.0*sin(moveY/300.0);
         lookAt(eyeX, eyeY, eyeZ, 0, 0, 0, 0, 0, 1 );
-        //scale( zoom, zoom, zoom );
+        scale( zoom, zoom, zoom );
+        zoom = 1;
 
     //GLMatrix MVP = camera.getProjectionMatrix() * camera.getViewMatrix();
     //glUniformMatrix4fv( 0, 1, GL_TRUE, MVP.data );

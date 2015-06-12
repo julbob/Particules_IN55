@@ -20,7 +20,6 @@ void main()
 	
 	
   gl_Position = mvp * vec4(newPosition, 1.0f);
-  gl_PointSize = 3.0;
   /*vec3 vertexColor = vec3(0f,1.0f,0f);
 	if(type == 0){
 		vertexColor = vec3(1.0f,1-(position.z/maxZ),0f);

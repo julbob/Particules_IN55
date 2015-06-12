@@ -28,7 +28,7 @@ public:
     void timerEvent(QTimerEvent*);
 
 private:
-    static const int maxParticles = 5000;
+    static const int maxParticles = 10000;
     static const int interval = 30;
 
     QList<Particle*> particles;
@@ -46,7 +46,7 @@ private:
     Camera camera;
     Basis* base;
 
-    float zoom;
+    float zoom = 1;
     float moveX = -250;
     float moveY = 250;
     int moveStartX, moveStartY;
