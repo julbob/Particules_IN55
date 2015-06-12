@@ -42,11 +42,7 @@ void Particle::updateStats(float delta){
 
     this->age =  this->age + delta/1000;
     //Pesanteur
-    this->speed.setY(this->speed.getY() - (g * delta/1000));
-
-    //this->pos.setX(this->pos.getX() + this->speed.getX()*delta/1000);
-    //this->pos.setY(this->pos.getY() + this->speed.getY()*delta/1000);
-    //this->pos.setZ(this->pos.getZ() + this->speed.getZ()*delta/1000);
+    this->speed.setZ(this->speed.getZ() - (g * delta/1000));
 }
 
 

@@ -22,7 +22,9 @@ public:
     */
     void render();
 
-    void keyPressEvent(QKeyEvent *);
+    void mousePressEvent(QMouseEvent *);
+    void mouseMoveEvent(QMouseEvent *);
+    void wheelEvent(QWheelEvent*);
     void timerEvent(QTimerEvent*);
 
 private:
@@ -43,6 +45,11 @@ private:
 
     Camera camera;
     Basis* base;
+
+    float zoom;
+    float moveX = -250;
+    float moveY = 250;
+    int moveStartX, moveStartY;
 };
 
 #endif // SCENE_H

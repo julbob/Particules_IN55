@@ -84,7 +84,12 @@ Scene::render()
 {
 
     // Initialisation de la caméra
-    lookAt( 5, 5, 5, 0, 0, 0 );
+        float eyeX, eyeY, eyeZ;
+        eyeX = 5.0*cos(-moveX/300.0)*cos(moveY/300.0);
+        eyeY = 5.0*sin(-moveX/300.0)*cos(moveY/300.0);
+        eyeZ = 5.0*sin(moveY/300.0);
+        lookAt(eyeX, eyeY, eyeZ, 0, 0, 0, 0, 0, 1 );
+        //scale( zoom, zoom, zoom );
 
     //GLMatrix MVP = camera.getProjectionMatrix() * camera.getViewMatrix();
     //glUniformMatrix4fv( 0, 1, GL_TRUE, MVP.data );
@@ -144,21 +149,23 @@ void Scene::timerEvent(QTimerEvent* event){
     updateGL();
 }
 
+void Scene::mousePressEvent(QMouseEvent* p_event){
+    moveStartX = p_event->x();
+    moveStartY = p_event->y();
+}
 
-void Scene::keyPressEvent(QKeyEvent *event){
-    switch( event->key())
-    {
-        case Qt::Key_Escape:
-            close();
-            break;
+void Scene::mouseMoveEvent(QMouseEvent* p_event){
+    moveX += p_event->x() - moveStartX;
+    moveY += p_event->y() - moveStartY;
+    if(moveY > 300) moveY = 300;
+    else if(moveY < -300) moveY = -300;
 
-        case Qt::Key_Left:
-            camera.rotateZ(-10);
-            break;
+    moveStartX = p_event->x();
+    moveStartY = p_event->y();
+}
 
-        case Qt::Key_Right:
-            camera.rotateZ(10);
-            break;
-     }
+
+void Scene::wheelEvent(QWheelEvent* p_event){
+    zoom *= 1 + (float)p_event->delta()/5000.0;
 }
 
