@@ -18,7 +18,9 @@
 int main(int argc, char *argv[])
 {
 	QApplication app(argc, argv);
-    Scene win;
-	win.show();
+
+
+    Scene* win = new Scene();
+    win->show();
 	return app.exec();
 }

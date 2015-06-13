@@ -2,41 +2,46 @@
 
 #include <iostream>
 #include "QDebug"
+#include "QVBoxLayout"
 
 using namespace std;
 
-Scene::Scene():
-particlesPos((GLfloat*) calloc(3 * maxParticles, sizeof(GLfloat))),
-particlesColor((GLfloat*) calloc(3 * maxParticles, sizeof(GLfloat))),
-particlesSpeed((GLfloat*) calloc(3 * maxParticles, sizeof(GLfloat))),
- particlesAge((GLfloat*) calloc(maxParticles, sizeof(GLfloat))),
-indices((GLuint*) calloc(maxParticles, sizeof( GLuint)))
+Scene::Scene()
 {
     setWindowTitle(trUtf8("Particles"));
 
-    float x =(float)rand()/(float)RAND_MAX * 4 - 4;
-    float y =(float)rand()/(float)RAND_MAX * 4 - 4;
-    float z =(float)rand()/(float)RAND_MAX * 4 - 4;
+    particlesPos = (GLfloat*) calloc(3 * maxParticles, sizeof(GLfloat));
+    particlesColor = (GLfloat*) calloc(3 * maxParticles, sizeof(GLfloat));
+    particlesSpeed = (GLfloat*) calloc(3 * maxParticles, sizeof(GLfloat));
+    particlesAge = (GLfloat*) calloc(maxParticles, sizeof(GLfloat));
+    indices = (GLuint*) calloc(maxParticles, sizeof( GLuint));
 
-    float vx =(float)rand()/(float)RAND_MAX * 8 - 8;
-    float vy =(float)rand()/(float)RAND_MAX * 8 - 8;
-    float vz =(float)rand()/(float)RAND_MAX * 8 - 8;
+
+    float x =(float)rand()/(float)RAND_MAX * 4 - 2;
+    float y =(float)rand()/(float)RAND_MAX * 4 - 2;
+    float z =(float)rand()/(float)RAND_MAX * 4 - 2;
+
+    float vx =(float)rand()/(float)RAND_MAX * 8 - 4;
+    float vy =(float)rand()/(float)RAND_MAX * 8 - 4;
+    float vz =(float)rand()/(float)RAND_MAX * 8 - 4;
 
     for(int i = 0; i<maxParticles; i++){
         Particle *p = new Particle( new Vector3f(x,y,z), new Vector3f(vx,vy,vz) ,1,5);
         particles.append(p);
-        x = (float)rand()/(float)RAND_MAX * 4 - 4;
-        y =(float)rand()/(float)RAND_MAX * 4 - 4;
-        z =(float)rand()/(float)RAND_MAX * 4 - 4;
+        x = (float)rand()/(float)RAND_MAX * 4 - 2;
+        y =(float)rand()/(float)RAND_MAX * 4 - 2;
+        z =(float)rand()/(float)RAND_MAX * 4 - 2;
 
-        vx = (float)rand()/(float)RAND_MAX * 8 - 8;
-        vy =(float)rand()/(float)RAND_MAX * 8 - 8;
-        vz =(float)rand()/(float)RAND_MAX * 8 - 8;
+        vx = (float)rand()/(float)RAND_MAX * 8 - 4;
+        vy =(float)rand()/(float)RAND_MAX * 8 - 4;
+        vz =(float)rand()/(float)RAND_MAX * 8 - 4;
 
         indices[i] = i;
     }
 
     lifeTimer = startTimer(50);
+
+
 
 }
 
@@ -75,6 +80,10 @@ Scene::initializeObjects()
         cout << "NOT Loaded!" << endl;
     }
 
+
+    textureID = createTexture("Shaders/Textures/tex2d_cascade.png");
+    glUniform1i( glGetUniformLocation(getCurrentShaderId(),"texId"), textureID ) ;
+
     return true;
 }
 
@@ -94,7 +103,7 @@ Scene::render()
     //GLMatrix MVP = camera.getProjectionMatrix() * camera.getViewMatrix();
     //glUniformMatrix4fv( 0, 1, GL_TRUE, MVP.data );
 
-    transmitMVP(0);
+        transmitMVP(glGetUniformLocation(getCurrentShaderId(),"mvp"));
     pushMatrix();
         base->draw();
      popMatrix();
@@ -126,7 +135,7 @@ void Scene::timerEvent(QTimerEvent* event){
     }
     else{
         for(int i = 0; i < maxParticles; i++){
-            particles[i]->updateStats(this->interval);
+            particles[i]->updateStats(this->interval, this->g);
             particlesPos[i*3 + 0] = particles[i]->getPos().getX();
             particlesPos[i*3 + 1] = particles[i]->getPos().getY();
             particlesPos[i*3 + 2] = particles[i]->getPos().getZ();
@@ -168,4 +177,6 @@ void Scene::mouseMoveEvent(QMouseEvent* p_event){
 void Scene::wheelEvent(QWheelEvent* p_event){
     zoom *= 1 + (float)p_event->delta()/5000.0;
 }
+
+
 

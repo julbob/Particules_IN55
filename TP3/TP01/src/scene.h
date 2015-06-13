@@ -1,8 +1,8 @@
 #ifndef SCENE_H
 #define SCENE_H
 
+#include "QInputDialog"
 #include "GlWindow.h"
-
 #include "../particle.h"
 #include "Camera.h"
 #include "../Common/Shapes/Basis.h"
@@ -28,8 +28,12 @@ public:
     void timerEvent(QTimerEvent*);
 
 private:
-    static const int maxParticles = 10000;
+    int maxParticles = 10000;
     static const int interval = 30;
+
+
+    float g = 9.8;
+
 
     QList<Particle*> particles;
 
@@ -39,6 +43,8 @@ private:
     GLfloat* particlesSpeed;
     GLfloat* particlesAge;
     GLuint* indices;
+
+    GLuint textureID;
 
     int timerId;
     int lifeTimer;
@@ -50,6 +56,7 @@ private:
     float moveX = -250;
     float moveY = 250;
     int moveStartX, moveStartY;
+
 };
 
 #endif // SCENE_H
